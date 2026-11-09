@@ -100,13 +100,11 @@ bool adrenotools_import_user_mem(void *handle, void *hostPtr, uint64_t size) {
         .virtaddr = reinterpret_cast<uint64_t>(hostPtr),
     };
 
-    kgsl_gpuobj_import userMemImport{
-        .priv = reinterpret_cast<uint64_t>(&addr),
-        .priv_len = size,
-        .flags = KGSL_CACHEMODE_WRITEBACK << KGSL_CACHEMODE_SHIFT | KGSL_MEMFLAGS_IOCOHERENT,
-        .type = KGSL_USER_MEM_TYPE_ADDR,
-
-    };
+    kgsl_gpuobj_import userMemImport{};
+    userMemImport.priv = reinterpret_cast<uint64_t>(&addr);
+    userMemImport.priv_len = size;
+    userMemImport.flags = KGSL_CACHEMODE_WRITEBACK << KGSL_CACHEMODE_SHIFT | KGSL_MEMFLAGS_IOCOHERENT;
+    userMemImport.type = KGSL_USER_MEM_TYPE_ADDR;
 
     kgsl_gpuobj_info info{};
 
@@ -139,10 +137,9 @@ err:
 bool adrenotools_mem_gpu_allocate(void *handle, uint64_t *size) {
     auto mapping{reinterpret_cast<adrenotools_gpu_mapping *>(handle)};
 
-    kgsl_gpuobj_alloc gpuobjAlloc{
-        .size = *size,
-        .flags = KGSL_CACHEMODE_WRITEBACK << KGSL_CACHEMODE_SHIFT | KGSL_MEMFLAGS_IOCOHERENT,
-    };
+    kgsl_gpuobj_alloc gpuobjAlloc{};
+    gpuobjAlloc.size = *size;
+    gpuobjAlloc.flags = KGSL_CACHEMODE_WRITEBACK << KGSL_CACHEMODE_SHIFT | KGSL_MEMFLAGS_IOCOHERENT;
 
     kgsl_gpuobj_info info{};
 

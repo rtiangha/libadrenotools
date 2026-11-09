@@ -145,10 +145,9 @@ __attribute__((visibility("default"))) void *hook_android_load_sphal_library(con
     // https://android.googlesource.com/platform/system/core/+/master/libvndksupport/linker.cpp
     for (const char *name : {"sphal", "vendor", "default"}) {
         if (auto vendorNs{android_get_exported_namespace(name)}) {
-            android_dlextinfo dlextinfo{
-                .flags = ANDROID_DLEXT_USE_NAMESPACE,
-                .library_namespace = vendorNs,
-            };
+            android_dlextinfo dlextinfo{};
+            dlextinfo.flags = ANDROID_DLEXT_USE_NAMESPACE;
+            dlextinfo.library_namespace = vendorNs;
 
             return hook_android_dlopen_ext(filename, flags, &dlextinfo);
         }
@@ -206,18 +205,16 @@ __attribute__((visibility("default"))) int hook_gsl_memory_free_pure(void *memDe
         if (!kgsl_fd)
             kgsl_fd = open("/dev/kgsl-3d0", O_RDWR);
 
-        kgsl_gpumem_get_info info{
-            .gpuaddr = gslMemDesc->gpuaddr
-        };
+        kgsl_gpumem_get_info info{};
+        info.gpuaddr = gslMemDesc->gpuaddr;
 
         if (ioctl(kgsl_fd, IOCTL_KGSL_GPUMEM_GET_INFO, &info) < 0) {
             LOGI("IOCTL_KGSL_GPUMEM_GET_INFO failed");
             return 0;
         }
 
-        kgsl_gpuobj_free args{
-            .id = info.id,
-        };
+        kgsl_gpuobj_free args{};
+        args.id = info.id;
 
         if (ioctl(kgsl_fd, IOCTL_KGSL_GPUOBJ_FREE, &args) < 0)
             LOGI("IOCTL_KGSL_GPUOBJ_FREE failed");
